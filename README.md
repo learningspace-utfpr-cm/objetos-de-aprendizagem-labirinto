@@ -8,10 +8,9 @@
 
 ## Mapas conceituais
 ### Objeto de aprendizado
-![Mapa_conceitual (3)](https://github.com/user-attachments/assets/b98a90a8-90aa-4079-bb1f-62d4151e0943)
+![Mapa_conceitual](https://github.com/user-attachments/assets/b98a90a8-90aa-4079-bb1f-62d4151e0943)
 
 ### Lógica de programação
-![Mapa_conceitual (4)](https://github.com/user-attachments/assets/c6dc5cad-3fa2-4ce0-8122-e7b78c121731)
-
+![Mapa_conceitual](https://github.com/user-attachments/assets/a99ebab0-c834-42ba-9c05-caaf13c2fee8)
 
 ## Modelo Instrucional
