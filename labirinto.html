@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Labirinto com Lógica de Programação</title>
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #eef2f5;
+            color: #333;
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        header {
+            position: absolute;
+            top: 10px;
+            left: 2.5%;
+            width: 95%;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            box-sizing: border-box;
+            padding: 0 20px;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #levelSelect {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-weight: bold;
+            background-color: #f8f8f8;
+            cursor: pointer;
+        }
+
+        #blockCounter {
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .limit-exceeded {
+            color: #d32f2f !important;
+        }
+
+        /* CONTAINER */
+        #container {
+            position: absolute;
+            top: 80px;
+            bottom: 70px;
+            left: 2.5%;
+            right: 2.5%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: block;
+        }
+
+        #gameArea {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 50%;
+            background-color: #f9f9f9;
+            border-right: 1px solid #ddd;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #mapWrapper {
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        #blocklyDiv {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 50%;
+            background-color: #fff;
+        }
+
+        /* CONTROLS */
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            height: 50px;
+            z-index: 100;
+        }
+
+        button {
+            padding: 10px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: transform 0.1s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        #btnRun {
+            background: #42A5F5;
+            color: white;
+        }
+
+        #btnReset {
+            background: #EF5350;
+            color: white;
+        }
+
+        /* GAME ASSETS */
+        .cell {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 1px solid #eee;
+            box-sizing: border-box;
+        }
+
+        .wall {
+            background-color: #546E7A;
+        }
+
+        .path {
+            background-color: #fff;
+        }
+
+        .goal {
+            background-color: #66BB6A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        #player {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: #FF7043;
+            border-radius: 8px;
+            transition: all 0.2s linear;
+            z-index: 10;
+            top: 5px;
+            left: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        #player::after {
+            content: '▲';
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            transform: rotate(90deg);
+        }
+
+        /* CARD-INFO */
+        #tutorialOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .tutorial-box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            animation: popIn 0.3s ease;
+        }
+
+        .tutorial-box h2 {
+            margin-top: 0;
+            color: #2196F3;
+        }
+
+        .tutorial-box p {
+            font-size: 18px;
+            line-height: 1.5;
+            color: #444;
+        }
+
+        .tutorial-box button {
+            background: #4CAF50;
+            color: white;
+            margin-top: 20px;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .shake-error {
+            animation: shake 0.4s ease-in-out;
+            background-color: #d32f2f !important;
+            box-shadow: 0 0 10px #d32f2f !important;
+        }
+
+        .shake-success {
+            animation: shake 0.5s ease-in-out;
+            background-color: #388E3C !important;
+            box-shadow: 0 0 10px #388E3C !important;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="tutorialOverlay">
+        <div class="tutorial-box">
+            <h2 id="tutorialTitle">Info</h2>
+            <p id="tutorialText">...</p>
+            <button onclick="closeTutorial()">Entendi</button>
+        </div>
+    </div>
+
+    <header>
+        <h1>Labirinto</h1>
+        <div class="status-bar">
+            <select id="levelSelect" onchange="userSelectLevel(this.value)"></select>
+            <div id="blockCounter">Blocos: 0/0</div>
+        </div>
+    </header>
+
+    <div id="container">
+        <div id="gameArea">
+            <div id="player"></div>
+        </div>
+        <div id="blocklyDiv"></div>
+    </div>
+
+    <div id="controls">
+        <button id="btnRun" onclick="runCode()">▶ Executar</button>
+        <button id="btnReset" onclick="resetLevel()" style="display: none;">↻ Reiniciar</button>
+    </div>
+
+    <script>
+        const TILE_SIZE = 50;
+
+        // --- DESIGN DE NÍVEIS ---
+        const levels = [
+            {
+                name: "1. Introdução",
+                // Objetivo: Entender os blocos básicos.
+                map: [
+                    [1, 1, 1, 1, 1, 1],
+                    [1, 1, 1, 1, 3, 1],
+                    [1, 1, 1, 1, 0, 1],
+                    [1, 2, 0, 0, 0, 1],
+                    [1, 1, 1, 1, 1, 1]],
+                startPos: { x: 1, y: 3 }, startDir: 1,
+                blocks: ["move_forward", "turn_left", "turn_right"], maxBlocks: 6,
+                tutorial: { title: "Nível 1", text: "Bem-vindo ao labirinto! Use os blocos <b>Avançar</b>, <b>Virar à Esquerda</b> e <b>Virar à Direita</b> para chegar à estrela." }
+            },
+        ];
+
+        let currentLevelIndex = 0;
+        let map = [], playerPos = { x: 0, y: 0 }, playerDir = 1, commandQueue = [], isRunning = false;
+        let simPos = { x: 0, y: 0 }, simDir = 1, protectionCounter = 0, simHitWall = false;
+
+        // Populate Select
+        const levelSelect = document.getElementById("levelSelect");
+        levels.forEach((lvl, index) => {
+            let option = document.createElement("option");
+            option.value = index; option.text = lvl.name; levelSelect.appendChild(option);
+        });
+
+        // Blockly Defs
+        Blockly.defineBlocksWithJsonArray([
+            { "type": "move_forward", "message0": "Avançar ⬆", "previousStatement": null, "nextStatement": null, "colour": 160, },
+            { "type": "turn_left", "message0": "Virar Esq ↺", "previousStatement": null, "nextStatement": null, "colour": 160 },
+            { "type": "turn_right", "message0": "Virar Dir ↻", "previousStatement": null, "nextStatement": null, "colour": 160 },
+            { "type": "repeat_until_goal", "message0": "Repetir até chegar ★ %1 %2", "args0": [{ "type": "input_dummy" }, { "type": "input_statement", "name": "DO" }], "previousStatement": null, "nextStatement": null, "colour": 290 },
+            { "type": "if_path_ahead", "message0": "Se caminho à frente %1 %2", "args0": [{ "type": "input_dummy" }, { "type": "input_statement", "name": "DO" }], "previousStatement": null, "nextStatement": null, "colour": 210 },
+            { "type": "if_else_path_ahead", "message0": "Se caminho à frente %1 %2 senão %3", "args0": [{ "type": "input_dummy" }, { "type": "input_statement", "name": "DO" }, { "type": "input_statement", "name": "ELSE" }], "previousStatement": null, "nextStatement": null, "colour": 210 }
+        ]);
+
+        javascript.javascriptGenerator.forBlock['move_forward'] = function (block) { return 'simulationMove();\n'; };
+        javascript.javascriptGenerator.forBlock['turn_left'] = function (block) { return 'simulationTurn(-1);\n'; };
+        javascript.javascriptGenerator.forBlock['turn_right'] = function (block) { return 'simulationTurn(1);\n'; };
+        javascript.javascriptGenerator.forBlock['repeat_until_goal'] = function (block) {
+            var branch = javascript.javascriptGenerator.statementToCode(block, 'DO');
+            return 'while (!simulationIsGoal() && !simHitWall && ++protectionCounter < 2000) {\n' + branch + '}\n';
+        };
+        javascript.javascriptGenerator.forBlock['if_path_ahead'] = function (block) {
+            var branch = javascript.javascriptGenerator.statementToCode(block, 'DO');
+            return 'if (simulationPathAhead()) {\n' + branch + '}\n';
+        };
+        javascript.javascriptGenerator.forBlock['if_else_path_ahead'] = function (block) {
+            var branch = javascript.javascriptGenerator.statementToCode(block, 'DO');
+            var branchElse = javascript.javascriptGenerator.statementToCode(block, 'ELSE');
+            return 'if (simulationPathAhead()) {\n' + branch + '} else {\n' + branchElse + '}\n';
+        };
+
+        const workspace = Blockly.inject('blocklyDiv', {
+            toolbox: { "kind": "flyoutToolbox", "contents": [] },
+            maxBlocks: Infinity,
+            scrollbars: true,
+            trashcan: true
+        });
+
+        // Resize handler
+        function onResize() {
+            var element = document.getElementById('blocklyDiv');
+            Blockly.svgResize(workspace);
+        }
+        window.addEventListener('resize', onResize, false);
+        setTimeout(onResize, 100);
+
+        workspace.addChangeListener(() => updateBlockCounter());
+
+        function userSelectLevel(val) { loadLevel(parseInt(val)); }
+
+        function loadLevel(index) {
+            if (index >= levels.length) { alert("PARABÉNS! VOCÊ ZEROU TUDO!"); index = 0; }
+            currentLevelIndex = index;
+            document.getElementById("levelSelect").value = index;
+
+            document.getElementById('btnRun').style.display = 'inline-block';
+            document.getElementById('btnReset').style.display = 'none';
+
+            const tutBtn = document.querySelector('.tutorial-box button');
+            tutBtn.innerText = 'Entendi';
+            tutBtn.onclick = closeTutorial;
+
+            const level = levels[index];
+            map = level.map;
+            playerPos = { ...level.startPos }; playerDir = level.startDir;
+            workspace.options.maxBlocks = level.maxBlocks;
+            updateToolbox(level.blocks);
+            workspace.clear();
+            drawMap();
+            resetLevelVariables();
+            updateBlockCounter();
+            showTutorial(level.tutorial);
+            setTimeout(onResize, 50);
+        }
+
+        function updateToolbox(allowedBlocks) {
+            const toolboxContents = allowedBlocks.map(type => ({ "kind": "block", "type": type }));
+            workspace.updateToolbox({ "kind": "flyoutToolbox", "contents": toolboxContents });
+        }
+
+        function updateBlockCounter() {
+            const max = workspace.options.maxBlocks;
+            const used = workspace.getAllBlocks(false).length;
+            const counterEl = document.getElementById("blockCounter");
+            counterEl.innerText = `Blocos: ${used}/${max}`;
+            if (used > max) counterEl.classList.add("limit-exceeded");
+            else counterEl.classList.remove("limit-exceeded");
+        }
+
+        function showTutorial(tutorialData) {
+            if (!tutorialData) return;
+            document.getElementById('tutorialTitle').innerText = tutorialData.title;
+            document.getElementById('tutorialText').innerHTML = tutorialData.text;
+            document.getElementById('tutorialOverlay').style.display = 'flex';
+        }
+        function closeTutorial() { document.getElementById('tutorialOverlay').style.display = 'none'; }
+
+        const gameArea = document.getElementById('gameArea');
+        function drawMap() {
+            gameArea.innerHTML = '';
+            const mapHeightPx = map.length * TILE_SIZE;
+            const mapWidthPx = map[0].length * TILE_SIZE;
+
+            const mapWrapper = document.createElement('div');
+            mapWrapper.id = 'mapWrapper';
+            mapWrapper.style.width = mapWidthPx + 'px';
+            mapWrapper.style.height = mapHeightPx + 'px';
+            mapWrapper.style.position = 'relative';
+
+            const playerDiv = document.createElement('div');
+            playerDiv.id = 'player';
+            mapWrapper.appendChild(playerDiv);
+
+            for (let y = 0; y < map.length; y++) {
+                for (let x = 0; x < map[y].length; x++) {
+                    let cell = document.createElement('div');
+                    let type = map[y][x];
+                    cell.className = 'cell ' + (type === 1 ? 'wall' : (type === 3 ? 'goal' : 'path'));
+
+                    if (type === 3) cell.innerHTML = '★';
+
+                    cell.style.top = (y * TILE_SIZE) + 'px';
+                    cell.style.left = (x * TILE_SIZE) + 'px';
+
+                    mapWrapper.appendChild(cell);
+                }
+            }
+
+            gameArea.appendChild(mapWrapper);
+
+            updatePlayerVisual(playerDiv, playerPos.x, playerPos.y, playerDir);
+        }
+
+        function updatePlayerVisual(el, x, y, dir) {
+            if (!el) return;
+            el.style.top = (y * TILE_SIZE + 5) + 'px';
+            el.style.left = (x * TILE_SIZE + 5) + 'px';
+            const rotation = (dir * 90) - 90;
+            el.style.transform = `rotate(${rotation}deg)`;
+        }
+
+        function simulationMove() {
+            if (simHitWall) return;
+            let nextX = simPos.x, nextY = simPos.y;
+            if (simDir === 0) nextY--; if (simDir === 1) nextX++;
+            if (simDir === 2) nextY++; if (simDir === 3) nextX--;
+            if (map[nextY] && map[nextY][nextX] !== 1) {
+                simPos.x = nextX; simPos.y = nextY;
+                commandQueue.push({ action: "move", x: nextX, y: nextY, dir: simDir });
+            } else {
+                simHitWall = true;
+                commandQueue.push({ action: "bonk", x: simPos.x, y: simPos.y, dir: simDir });
+            }
+        }
+
+        function simulationTurn(direction) {
+            if (simHitWall) return;
+            if (direction === -1) simDir = (simDir + 3) % 4; else simDir = (simDir + 1) % 4;
+            commandQueue.push({ action: "turn", x: simPos.x, y: simPos.y, dir: simDir });
+        }
+
+        function simulationIsGoal() { return map[simPos.y][simPos.x] === 3; }
+
+        function simulationPathAhead() {
+            let cx = simPos.x, cy = simPos.y;
+            if (simDir === 0) cy--; if (simDir === 1) cx++;
+            if (simDir === 2) cy++; if (simDir === 3) cx--;
+            return (map[cy] && map[cy][cx] !== 1);
+        }
+
+        function runCode() {
+            if (isRunning) return;
+            if (workspace.getAllBlocks(false).length > workspace.options.maxBlocks) {
+                alert(`Limite de blocos excedido!`); return;
+            }
+
+            document.getElementById('btnRun').style.display = 'none';
+            document.getElementById('btnReset').style.display = 'inline-block';
+
+            resetLevelVariables();
+            simPos = { ...playerPos }; simDir = playerDir; protectionCounter = 0; simHitWall = false; isRunning = true;
+            const code = javascript.javascriptGenerator.workspaceToCode(workspace);
+            try {
+                eval(code);
+                if (commandQueue.length === 0) isRunning = false; else processQueue();
+            } catch (e) { alert("Erro: " + e); isRunning = false; }
+        }
+
+        function processQueue() {
+            const p = document.getElementById('player');
+            if (commandQueue.length === 0) {
+                if (map[playerPos.y][playerPos.x] === 3) {
+                    p.classList.remove('shake-success');
+                    void p.offsetWidth;
+                    p.classList.add('shake-success');
+                    setTimeout(() => {
+                        if (currentLevelIndex + 1 < levels.length) {
+                            loadLevel(currentLevelIndex + 1);
+                        } else {
+                            showVictoryScreen();
+                        }
+                    }, 1500);
+                } else {
+                    p.classList.remove('shake-error');
+                    void p.offsetWidth;
+                    p.classList.add('shake-error');
+                }
+                isRunning = false; return;
+            }
+            const cmd = commandQueue.shift();
+            playerPos.x = cmd.x; playerPos.y = cmd.y; playerDir = cmd.dir;
+            updatePlayerVisual(p, playerPos.x, playerPos.y, playerDir);
+            if (cmd.action === "bonk") {
+                p.classList.remove('shake-error');
+                void p.offsetWidth;
+                p.classList.add('shake-error');
+            }
+            setTimeout(processQueue, 150);
+        }
+
+        function resetLevel() {
+            document.getElementById('btnRun').style.display = 'inline-block';
+            document.getElementById('btnReset').style.display = 'none';
+
+            resetLevelVariables();
+        }
+
+        function resetLevelVariables() {
+            const level = levels[currentLevelIndex];
+            playerPos = { ...level.startPos }; playerDir = level.startDir;
+            commandQueue = []; isRunning = false; simHitWall = false;
+            const p = document.getElementById('player');
+            p.classList.remove('shake-error');
+            updatePlayerVisual(document.getElementById('player'), playerPos.x, playerPos.y, playerDir);
+        }
+
+        function showVictoryScreen() {
+            document.getElementById('tutorialTitle').innerText = "Parabéns!";
+            document.getElementById('tutorialText').innerHTML = "<b>Você zerou o Labirinto!</b><br><br>Você dominou todos os algoritmos.";
+
+            const btn = document.querySelector('.tutorial-box button');
+            btn.innerText = "Voltar ao Início";
+            btn.onclick = function () {
+                closeTutorial();
+                loadLevel(0);
+            };
+
+            document.getElementById('tutorialOverlay').style.display = 'flex';
+        }
+
+        loadLevel(0);
+    </script>
+</body>
+
+</html>
