@@ -1,5 +1,8 @@
 # Plano de Aula
 
+## Video
+https://youtu.be/A-mBFjm95fQ
+
 ## Preparação do ambiente
 Para preparar o ambiente para fazer uma aula com o labirinto é necessário realizar os seguintes passos:
 - Na máquina que será utilizada, instale o projeto pelo github em formato zip;
