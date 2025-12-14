@@ -20,5 +20,6 @@
 ![Mapa_conceitual](https://github.com/user-attachments/assets/a99ebab0-c834-42ba-9c05-caaf13c2fee8)
 
 ## Modelo Instrucional
-<img width="1059" height="1643" alt="Objetos drawio" src="https://github.com/user-attachments/assets/572ad9e6-4fb6-43e2-962a-01a2d2af4934" />
+<img width="1059" height="1790" alt="Objetos drawio" src="https://github.com/user-attachments/assets/8ceed4e8-fcd0-4126-9acb-1a84f07acbcb" />
+
 
