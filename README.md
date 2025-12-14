@@ -16,3 +16,7 @@
 ## Modelo Instrucional
 <img width="1059" height="1643" alt="Objetos drawio" src="https://github.com/user-attachments/assets/572ad9e6-4fb6-43e2-962a-01a2d2af4934" />
 
+## Instrução para instalação e execução:
+- Para instalar clique no botão verde "code" e depois no "download ZIP".
+- Extraia a pasta instalada para uma pasta desejada
+- Execute o arquivo "labirinto" no seu navegador de preferência
