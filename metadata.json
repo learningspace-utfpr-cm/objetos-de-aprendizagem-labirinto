@@ -1,0 +1,38 @@
+{
+  "@context": "https://schema.org/",
+  "@type": "LearningResource",
+  "name": "Labirinto de Lógica – Jogo Educativo de Programação",
+  "description": "Objeto de aprendizagem interativo no formato de jogo web, onde o aluno utiliza blocos de comando (sequência, repetição e condicional) para guiar um personagem através de labirintos, desenvolvendo o raciocínio lógico e algorítmico.",
+  "interactivityType": "active",
+  "inLanguage": "pt-BR",
+  "keywords": [
+    "lógica de programação",
+    "algoritmos",
+    "pensamento computacional",
+    "gamificação",
+    "block coding",
+    "ensino fundamental",
+    "ensino médio"
+  ],
+  "learningResourceType": "educational game",
+  "educationalUse": "practice",
+  "coverage": ["Ensino Fundamental II", "Ensino Médio"],
+  "audience": {
+    "@type": "EducationalAudience",
+    "educationalRole": "student"
+  },
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Pedro Henrique Saraiva Bornia",
+      "affiliation": "UTFPR - Universidade Tecnológica Federal do Paraná"
+    },
+    {
+      "@type": "Person",
+      "name": "Felipe Kenzo Suguimoto",
+      "affiliation": "UTFPR - Universidade Tecnológica Federal do Paraná"
+    }
+  ],
+  "version": "1.0",
+  "license": "https://www.gnu.org/licenses/gpl-3.0.html"
+}
