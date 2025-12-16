@@ -1,4 +1,4 @@
-# OPT016-labirinto
+# objetos-de-aprendizagem-labirinto
 
 ## Instrução para instalação e execução:
 - Para instalar clique no botão verde "code" e depois no "download ZIP".
